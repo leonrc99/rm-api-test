@@ -4,7 +4,6 @@ import com.reliquiasdamagia.api_rm.entity.CartItem;
 import com.reliquiasdamagia.api_rm.entity.enums.CartStatus;
 import com.reliquiasdamagia.api_rm.entity.Product;
 import com.reliquiasdamagia.api_rm.entity.ShoppingCart;
-import com.reliquiasdamagia.api_rm.repository.CartItemRepository;
 import com.reliquiasdamagia.api_rm.repository.ProductRepository;
 import com.reliquiasdamagia.api_rm.repository.ShoppingCartRepository;
 import jakarta.transaction.Transactional;
@@ -86,6 +85,12 @@ public class ShoppingCartService {
     public void clearCart(Long userId) {
         ShoppingCart cart = getOrCreateCart(userId);
         cart.getItems().clear();
+        cartRepository.save(cart);
+    }
+
+    @Transactional
+    public void completeCart(ShoppingCart cart) {
+        cart.setStatus(CartStatus.COMPLETED);
         cartRepository.save(cart);
     }
 }

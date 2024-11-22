@@ -31,6 +31,10 @@ public class Order {
     @Column(nullable = false)
     private OrderStatus status;
 
+    private String paymentId;
+
+    private String paymentStatus;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<OrderItem> items;
