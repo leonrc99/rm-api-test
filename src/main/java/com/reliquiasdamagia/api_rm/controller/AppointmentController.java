@@ -2,16 +2,14 @@ package com.reliquiasdamagia.api_rm.controller;
 
 import com.reliquiasdamagia.api_rm.dto.AppointmentRequest;
 import com.reliquiasdamagia.api_rm.entity.Appointment;
-import com.reliquiasdamagia.api_rm.entity.User;
+import com.reliquiasdamagia.api_rm.entity.enums.AppointmentStatus;
 import com.reliquiasdamagia.api_rm.service.AppointmentService;
 import com.reliquiasdamagia.api_rm.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/tarot/appointments")
@@ -35,7 +33,7 @@ public class AppointmentController {
     @PutMapping("/{appointmentId}/status")
     public ResponseEntity<String> updateStatus(
             @PathVariable Long appointmentId,
-            @RequestParam String status) {
+            @RequestParam AppointmentStatus status) {
         appointmentService.updateAppointmentStatus(appointmentId, status);
         return ResponseEntity.ok("Status atualizado com sucesso.");
     }

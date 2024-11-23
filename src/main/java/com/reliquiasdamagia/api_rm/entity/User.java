@@ -1,13 +1,15 @@
 package com.reliquiasdamagia.api_rm.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -33,7 +35,7 @@ public class User {
     private String phoneNumber;
 
     @Column(nullable = false)
-    private String dateOfBirth;
+    private LocalDate dateOfBirth;
 
     @Column(nullable = false)
     private String address;
@@ -75,4 +77,16 @@ public class User {
     public boolean isConsultant() {
         return "CONSULTANT".equals(this.role);
     }
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_favorites",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
+    private List<Product> favorites;
+
+    @OneToMany(mappedBy = "user")
+    @JsonBackReference
+    private List<Order> orders;
 }

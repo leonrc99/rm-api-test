@@ -1,5 +1,6 @@
 package com.reliquiasdamagia.api_rm.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.reliquiasdamagia.api_rm.entity.enums.OrderStatus;
 import jakarta.persistence.*;
@@ -21,8 +22,10 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference  // Evita o problema de serialização infinita
+    private User user;
 
     @Column(nullable = false)
     private BigDecimal totalPrice;

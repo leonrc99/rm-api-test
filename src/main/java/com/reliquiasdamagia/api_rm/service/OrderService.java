@@ -1,14 +1,12 @@
 package com.reliquiasdamagia.api_rm.service;
 
-import com.reliquiasdamagia.api_rm.entity.Order;
-import com.reliquiasdamagia.api_rm.entity.OrderItem;
-import com.reliquiasdamagia.api_rm.entity.Product;
-import com.reliquiasdamagia.api_rm.entity.ShoppingCart;
+import com.reliquiasdamagia.api_rm.entity.*;
 import com.reliquiasdamagia.api_rm.entity.enums.CartStatus;
 import com.reliquiasdamagia.api_rm.entity.enums.OrderStatus;
 import com.reliquiasdamagia.api_rm.repository.OrderRepository;
 import com.reliquiasdamagia.api_rm.repository.ProductRepository;
 import com.reliquiasdamagia.api_rm.repository.ShoppingCartRepository;
+import com.reliquiasdamagia.api_rm.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +21,7 @@ public class OrderService {
     private final ShoppingCartRepository shoppingCartRepository;
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
     public Order createOrder(Long userId) {
         // Obtém o carrinho de compras do usuário
@@ -41,7 +40,11 @@ public class OrderService {
 
         // Cria a entidade Order
         Order order = new Order();
-        order.setUserId(userId);
+
+        User user = userRepository.findById(userId)
+                        .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+
+        order.setUser(user);
         order.setStatus(OrderStatus.PENDING);
         order.setTotalPrice(totalPrice);
 
@@ -72,8 +75,10 @@ public class OrderService {
     @Transactional
     public Order createOrderFromCart(ShoppingCart cart) {
         // Criar novo pedido
-        Order order = new Order();
-        order.setUserId(cart.getUserId());
+        Order order = new Order();User user = userRepository.findById(cart.getUserId())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+
+        order.setUser(user);
         order.setTotalPrice(cart.getItems().stream()
                 .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add));
