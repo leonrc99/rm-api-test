@@ -9,13 +9,17 @@ import com.mercadopago.exceptions.MPApiException;
 import com.mercadopago.exceptions.MPException;
 import com.mercadopago.resources.payment.Payment;
 import com.mercadopago.resources.preference.Preference;
+import com.reliquiasdamagia.api_rm.entity.Appointment;
 import com.reliquiasdamagia.api_rm.entity.Order;
 import com.reliquiasdamagia.api_rm.entity.ShoppingCart;
+import com.reliquiasdamagia.api_rm.entity.enums.AppointmentStatus;
+import com.reliquiasdamagia.api_rm.repository.AppointmentRepository;
 import com.reliquiasdamagia.api_rm.repository.OrderRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,6 +29,8 @@ public class PaymentService {
     private final OrderService orderService;
     private final ShoppingCartService shoppingCartService;
     private final OrderRepository orderRepository;
+    private final AppointmentRepository appointmentRepository;
+    private final AppointmentService appointmentService;
 
     public String createPaymentFromOrder(Order order, String payerEmail) throws MPException, MPApiException {
         // Configuração do cliente de preferência
@@ -79,10 +85,55 @@ public class PaymentService {
 
                 return true;
             }
+
+            if ("approved".equalsIgnoreCase(payment.getStatus())) {
+                Long appointmentId = Long.parseLong(payment.getExternalReference());
+                Appointment appointment = appointmentRepository.findById(appointmentId)
+                        .orElseThrow(() -> new RuntimeException("Consulta não encontrada."));
+
+                appointment.setStatus(AppointmentStatus.COMPLETED);
+                appointmentRepository.save(appointment);
+
+                return true;
+            }
+
             return false;
         } catch (MPException | MPApiException e) {
             e.printStackTrace();
             return false;
         }
+    }
+
+
+    public String createPaymentForAppointment(Long appointmentId, String payerEmail) throws MPException, MPApiException {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Consulta não encontrada."));
+
+        if (!AppointmentStatus.PENDING.equals(appointment.getStatus())) {
+            throw new RuntimeException("Apenas consultas com status PENDING podem ser pagas.");
+        }
+
+        // Configurar itens para o pagamento
+        PreferenceClient preferenceClient = new PreferenceClient();
+        PreferenceItemRequest item = PreferenceItemRequest.builder()
+                .title("Consulta Tarot")
+                .quantity(1)
+                .unitPrice(new BigDecimal(100)) // Exemplo de preço fixo, ajuste conforme necessário
+                .build();
+
+        PreferenceRequest preferenceRequest = PreferenceRequest.builder()
+                .items(List.of(item))
+                .payer(PreferencePayerRequest.builder().email(payerEmail).build())
+                .externalReference(String.valueOf(appointmentId))
+                .build();
+
+        Preference preference = preferenceClient.create(preferenceRequest);
+
+        // Atualizar a consulta com informações de pagamento
+        appointment.setPaymentId(preference.getId());
+        appointment.setStatus(AppointmentStatus.PAYMENT_INITIATED);
+        appointmentRepository.save(appointment);
+
+        return preference.getInitPoint();
     }
 }

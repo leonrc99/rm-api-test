@@ -1,5 +1,7 @@
 package com.reliquiasdamagia.api_rm.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -62,5 +64,15 @@ public class User {
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    // Relacionamento com a entidade Consultant, caso o usuário seja um consultor
+    @OneToOne(mappedBy = "user")
+    @JsonManagedReference
+    private Consultant consultant;
+
+    // Verifica se o usuário tem o papel de consultor
+    public boolean isConsultant() {
+        return "CONSULTANT".equals(this.role);
     }
 }

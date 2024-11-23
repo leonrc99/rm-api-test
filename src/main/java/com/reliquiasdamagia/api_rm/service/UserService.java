@@ -30,4 +30,9 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"))
                 .getEmail();
     }
+
+    public User getUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+    }
 }

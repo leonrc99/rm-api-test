@@ -5,10 +5,7 @@ import com.mercadopago.exceptions.MPException;
 import com.reliquiasdamagia.api_rm.entity.Order;
 import com.reliquiasdamagia.api_rm.entity.ShoppingCart;
 import com.reliquiasdamagia.api_rm.entity.enums.CartStatus;
-import com.reliquiasdamagia.api_rm.service.OrderService;
-import com.reliquiasdamagia.api_rm.service.PaymentService;
-import com.reliquiasdamagia.api_rm.service.ShoppingCartService;
-import com.reliquiasdamagia.api_rm.service.UserService;
+import com.reliquiasdamagia.api_rm.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +20,7 @@ public class PaymentController {
     private final PaymentService paymentService;
     private final OrderService orderService;
     private final UserService userService;
+    private final AppointmentService appointmentService;
 
     @PostMapping("/{userId}")
     public ResponseEntity<String> createPayment(@PathVariable Long userId) {
@@ -71,6 +69,19 @@ public class PaymentController {
             return ResponseEntity.badRequest().body("Evento não suportado.");
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Erro ao processar webhook: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/appointments/{appointmentId}")
+    public ResponseEntity<String> createPaymentForAppointment(
+            @PathVariable Long appointmentId) {
+        try {
+            String payerEmail = appointmentService.getUserEmailByAppointment(appointmentId);
+            String paymentLink = paymentService.createPaymentForAppointment(appointmentId, payerEmail);
+
+            return ResponseEntity.ok(paymentLink);
+        } catch (MPException | MPApiException e) {
+            return ResponseEntity.internalServerError().body("Erro ao criar pagamento: " + e.getMessage());
         }
     }
 }
