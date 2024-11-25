@@ -1,12 +1,12 @@
 package com.reliquiasdamagia.api_rm.controller;
 
-import com.mercadopago.exceptions.MPApiException;
-import com.mercadopago.exceptions.MPException;
 import com.reliquiasdamagia.api_rm.entity.Order;
 import com.reliquiasdamagia.api_rm.entity.ShoppingCart;
 import com.reliquiasdamagia.api_rm.entity.enums.CartStatus;
 import com.reliquiasdamagia.api_rm.service.*;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,65 +23,53 @@ public class PaymentController {
     private final AppointmentService appointmentService;
 
     @PostMapping("/{userId}")
-    public ResponseEntity<String> createPayment(@PathVariable Long userId) {
+    public ResponseEntity<?> createPayment(@PathVariable Long userId) {
         try {
-            // Recupera o carrinho
             ShoppingCart shoppingCart = shoppingCartService.getCart(userId);
-
-            // Validar status do carrinho
             if (!shoppingCart.getStatus().equals(CartStatus.DRAFT)) {
                 return ResponseEntity.badRequest().body("Apenas carrinhos com status DRAFT podem ser pagos.");
             }
 
-            // Criar a ordem no banco de dados
             Order order = orderService.createOrderFromCart(shoppingCart);
-
-            // E-mail do usuário (exemplo: autenticado)
             String payerEmail = userService.getUserEmailById(userId);
-
-            // Criar a preferência de pagamento
             String paymentLink = paymentService.createPaymentFromOrder(order, payerEmail);
 
             return ResponseEntity.ok(paymentLink);
-        } catch (MPException | MPApiException e) {
-            return ResponseEntity.internalServerError().body("Erro ao criar pagamento: " + e.getMessage());
+        } catch (EntityNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Carrinho ou usuário não encontrado.");
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body("Erro ao criar pagamento: " + ex.getMessage());
         }
     }
 
     @PostMapping("/webhook")
-    public ResponseEntity<String> handleWebhook(@RequestBody Map<String, Object> payload) {
+    public ResponseEntity<?> handleWebhook(@RequestBody Map<String, Object> payload) {
         try {
-            // Extrair informações úteis do payload
             String eventType = (String) payload.get("type");
-            Long paymentId = (Long) payload.get("id");
+            Long paymentId = Long.valueOf((Integer) payload.get("id"));
 
-            // Processar notificações específicas (ex.: pagamento aprovado)
             if ("payment".equals(eventType)) {
-                // Aqui, busque o pagamento no MercadoPago e atualize o pedido
-                // Este metodo deve ser implementado no serviço
                 boolean isUpdated = paymentService.processPaymentNotification(paymentId);
-
                 if (isUpdated) {
                     return ResponseEntity.ok("Webhook processado com sucesso.");
                 }
             }
-
             return ResponseEntity.badRequest().body("Evento não suportado.");
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Erro ao processar webhook: " + e.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body("Erro ao processar webhook: " + ex.getMessage());
         }
     }
 
     @PostMapping("/appointments/{appointmentId}")
-    public ResponseEntity<String> createPaymentForAppointment(
-            @PathVariable Long appointmentId) {
+    public ResponseEntity<?> createPaymentForAppointment(@PathVariable Long appointmentId) {
         try {
             String payerEmail = appointmentService.getUserEmailByAppointment(appointmentId);
             String paymentLink = paymentService.createPaymentForAppointment(appointmentId, payerEmail);
-
             return ResponseEntity.ok(paymentLink);
-        } catch (MPException | MPApiException e) {
-            return ResponseEntity.internalServerError().body("Erro ao criar pagamento: " + e.getMessage());
+        } catch (EntityNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Compromisso não encontrado.");
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body("Erro ao criar pagamento: " + ex.getMessage());
         }
     }
 }

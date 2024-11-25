@@ -6,7 +6,9 @@ import com.reliquiasdamagia.api_rm.entity.User;
 import com.reliquiasdamagia.api_rm.service.AuthService;
 import com.reliquiasdamagia.api_rm.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -19,24 +21,30 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
-        if (authService.existsUser(user)) {
-            return ResponseEntity.badRequest().body("E-mail já registrado.");
+        try {
+            if (authService.existsUser(user)) {
+                return ResponseEntity.badRequest().body("E-mail já registrado.");
+            }
+            authService.registerUser(user);
+            return ResponseEntity.ok(user);
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body("Erro ao registrar usuário: " + ex.getMessage());
         }
-
-        authService.registerUser(user);
-
-        return ResponseEntity.ok(user);
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
-        if (userService.getUserByEmail(authRequest.getEmail()).isEmpty()) {
-            return ResponseEntity.badRequest().body("Usuário não existe!");
+        try {
+            if (userService.getUserByEmail(authRequest.getEmail()).isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado.");
+            }
+            AuthResponse authResponse = authService.loginUser(authRequest);
+            return ResponseEntity.ok(authResponse);
+        } catch (AuthenticationException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas.");
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body("Erro ao fazer login: " + ex.getMessage());
         }
-
-        AuthResponse authResponse = authService.loginUser(authRequest);
-
-        return ResponseEntity.ok(authResponse);
     }
 
 }

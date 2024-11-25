@@ -5,6 +5,7 @@ import com.reliquiasdamagia.api_rm.entity.Product;
 import com.reliquiasdamagia.api_rm.entity.User;
 import com.reliquiasdamagia.api_rm.security.JwtUtil;
 import com.reliquiasdamagia.api_rm.service.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,71 +21,103 @@ public class UserController {
     private final JwtUtil jwtUtil;
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-
-        return ResponseEntity.ok(users);
+    public ResponseEntity<?> getAllUsers() {
+        try {
+            List<User> users = userService.getAllUsers();
+            return ResponseEntity.ok(users);
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body("Erro ao buscar usuários: " + ex.getMessage());
+        }
     }
 
-    // Visualizar perfil
     @GetMapping("/me")
-    public ResponseEntity<User> getUserProfile(@RequestHeader("Authorization") String token) {
-        String email = jwtUtil.extractUsername(token.substring(7));  // removendo "Bearer " do token
-        User user = userService.getUserByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User não encontrada"));
-        return ResponseEntity.ok(user);
+    public ResponseEntity<?> getUserProfile(@RequestHeader("Authorization") String token) {
+        try {
+            String email = jwtUtil.extractUsername(token.substring(7));
+            User user = userService.getUserByEmail(email)
+                    .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado."));
+            return ResponseEntity.ok(user);
+        } catch (EntityNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Perfil do usuário não encontrado.");
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body("Erro ao buscar perfil: " + ex.getMessage());
+        }
     }
 
-    // Atualizar perfil
     @PutMapping("/me")
-    public ResponseEntity<User> updateUserProfile(@RequestHeader("Authorization") String token,
-                                                  @RequestBody User updatedUser) {
-        String email = jwtUtil.extractUsername(token.substring(7));
-        User user = userService.getUserByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User não encontrada"));
-        User updated = userService.updateUserProfile(user.getId(), updatedUser);
-        return ResponseEntity.ok(updated);
+    public ResponseEntity<?> updateUserProfile(
+            @RequestHeader("Authorization") String token,
+            @RequestBody User updatedUser) {
+        try {
+            String email = jwtUtil.extractUsername(token.substring(7));
+            User user = userService.getUserByEmail(email)
+                    .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado."));
+            User updated = userService.updateUserProfile(user.getId(), updatedUser);
+            return ResponseEntity.ok(updated);
+        } catch (EntityNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado.");
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body("Erro ao atualizar perfil: " + ex.getMessage());
+        }
     }
 
-    // Adicionar favorito
     @PostMapping("/me/favorites/{productId}")
-    public ResponseEntity<Void> addFavorite(@RequestHeader("Authorization") String token,
-                                            @PathVariable Long productId) {
-        String email = jwtUtil.extractUsername(token.substring(7));
-        User user = userService.getUserByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User não encontrada"));
-        userService.addProductToFavorites(user.getId(), productId);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<?> addFavorite(@RequestHeader("Authorization") String token, @PathVariable Long productId) {
+        try {
+            String email = jwtUtil.extractUsername(token.substring(7));
+            User user = userService.getUserByEmail(email)
+                    .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado."));
+            userService.addProductToFavorites(user.getId(), productId);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        } catch (EntityNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário ou produto não encontrado.");
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body("Erro ao adicionar favorito: " + ex.getMessage());
+        }
     }
 
-    // Remover favorito
     @DeleteMapping("/me/favorites/{productId}")
-    public ResponseEntity<Void> removeFavorite(@RequestHeader("Authorization") String token,
-                                               @PathVariable Long productId) {
-        String email = jwtUtil.extractUsername(token.substring(7));
-        User user = userService.getUserByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User não encontrada"));
-        userService.removeProductFromFavorites(user.getId(), productId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    public ResponseEntity<?> removeFavorite(@RequestHeader("Authorization") String token, @PathVariable Long productId) {
+        try {
+            String email = jwtUtil.extractUsername(token.substring(7));
+            User user = userService.getUserByEmail(email)
+                    .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado."));
+            userService.removeProductFromFavorites(user.getId(), productId);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (EntityNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário ou produto não encontrado.");
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body("Erro ao remover favorito: " + ex.getMessage());
+        }
     }
 
-    // Obter favoritos
     @GetMapping("/me/favorites")
-    public ResponseEntity<List<Product>> getFavorites(@RequestHeader("Authorization") String token) {
-        String email = jwtUtil.extractUsername(token.substring(7));
-        User user = userService.getUserByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User não encontrada"));
-        List<Product> favorites = userService.getUserFavorites(user.getId());
-        return ResponseEntity.ok(favorites);
+    public ResponseEntity<?> getFavorites(@RequestHeader("Authorization") String token) {
+        try {
+            String email = jwtUtil.extractUsername(token.substring(7));
+            User user = userService.getUserByEmail(email)
+                    .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado."));
+            List<Product> favorites = userService.getUserFavorites(user.getId());
+            return ResponseEntity.ok(favorites);
+        } catch (EntityNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado.");
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body("Erro ao buscar favoritos: " + ex.getMessage());
+        }
     }
 
-    // Histórico de compras
     @GetMapping("/me/orders")
-    public ResponseEntity<List<Order>> getOrderHistory(@RequestHeader("Authorization") String token) {
-        String email = jwtUtil.extractUsername(token.substring(7));
-        User user = userService.getUserByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User não encontrada"));
-        List<Order> orders = userService.getUserOrderHistory(user.getId());
-        return ResponseEntity.ok(orders);
+    public ResponseEntity<?> getOrderHistory(@RequestHeader("Authorization") String token) {
+        try {
+            String email = jwtUtil.extractUsername(token.substring(7));
+            User user = userService.getUserByEmail(email)
+                    .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado."));
+            List<Order> orders = userService.getUserOrderHistory(user.getId());
+            return ResponseEntity.ok(orders);
+        } catch (EntityNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Histórico de pedidos não encontrado.");
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body("Erro ao buscar histórico de pedidos: " + ex.getMessage());
+        }
     }
 }
