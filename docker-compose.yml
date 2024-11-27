@@ -3,21 +3,20 @@ services:
   db:
     image: postgres:15
     environment:
-      POSTGRES_DB: ${secrets.DB_URL}
-      POSTGRES_USER: ${secrets.DB_USER}
-      POSTGRES_PASSWORD: ${secrets.DB_PASSWORD}
+      POSTGRES_DB: ${DB_URL}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5432:5432"
 
   app:
-    needs: db
     build: .
     ports:
       - "8080:8080"
     depends_on:
       - db
     environment:
-      DB_URL: ${secrets.DB_URL}
-      DB_USER: ${secrets.DB_USER}
-      DB_PASSWORD: ${secrets.DB_PASSWORD}
-      MERCADO_PAGO_ACCESS_TOKEN: ${secrets.MERCADO_PAGO_ACCESS_TOKEN}
+      DB_URL: ${DB_URL}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      MERCADO_PAGO_ACCESS_TOKEN: ${MERCADO_PAGO_ACCESS_TOKEN}
