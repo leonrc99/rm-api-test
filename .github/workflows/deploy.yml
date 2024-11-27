@@ -53,13 +53,13 @@ jobs:
           rm: false
 
       - name: Rodar Docker Compose na VPS
-        uses: appleboy/ssh-action@v0.1.4
+        uses: appleboy/ssh-action@v0.1.5
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_PRIVATE_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
-            cd ~/meu-app/rm-api-test-main
+            cd ~/meu-app/app
             docker-compose down
             docker-compose up -d
