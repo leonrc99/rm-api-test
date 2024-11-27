@@ -33,6 +33,8 @@ jobs:
 
   scp-files-job:
     runs-on: ubuntu-latest
+    needs: build   
+    
     steps:
       - uses: actions/checkout@v2
       - uses: a-was/scp-action@v1
