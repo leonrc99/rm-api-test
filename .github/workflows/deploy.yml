@@ -36,33 +36,6 @@ jobs:
     needs: build
 
     steps:
-      - name: Acessar VPS via SSH e criar diretório
-        uses: appleboy/ssh-action@v0.1.4
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          script: |
-            # Criar o diretório principal para o app, se não existir
-            mkdir -p ~/meu-app
-
-      - name: Enviar todos os arquivos para a VPS
-        uses: appleboy/scp-action@v0.1.5
-        with:
-          source: "."  # Envia todos os arquivos do repositório
-          target: "~/meu-app/"  # Caminho de destino na VPS
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          port: 22
-          timeout: 30s
-          command_timeout: 10m
-          use_insecure_cipher: false
-          debug: false
-          rm: false  # Não remove arquivos do destino antes de copiar
-
       - name: Rodar Docker Compose na VPS
         uses: appleboy/ssh-action@v0.1.4
         with:
