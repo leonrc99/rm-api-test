@@ -36,34 +36,41 @@ jobs:
     needs: build    
 
     steps:
-      - name: Garantir que o diretório de destino existe na VPS
+
+      - name: Enviar todos os arquivos para a VPS
+        uses: appleboy/scp-action@v0.1.5
+        with:
+          source: "."  # Envia todos os arquivos do repositório
+          target: "~/meu-app/"  # Caminho de destino na VPS
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          port: 22
+          timeout: 30s
+          command_timeout: 10m
+          use_insecure_cipher: false
+          debug: false
+          rm: false
+
+      - name: Listar arquivos na VPS
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_PRIVATE_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          script: |
-            ls -al ./
-
-      - name: Sincronizar arquivos com a VPS usando rsync
-        uses: wei/rsh@master
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          user: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_PRIVATE_KEY }}
-          command: |
-            rsync -avz --delete ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/home/${{ secrets.VPS_USER }}/meu-app/app/
+          script: ls -al ~/meu-app/app
     
 
       - name: Rodar Docker Compose na VPS
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v0.1.4
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_PRIVATE_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
-            cd ~/meu-app/app
+            cd ~/meu-app/rm-api-test-main
             docker-compose down
             docker-compose up -d
