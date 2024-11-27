@@ -33,10 +33,10 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs: build
+    needs: build    
 
     steps:
-      - name: Clonar repositório na VPS
+      - name: Garantir que o diretório de destino existe na VPS
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -44,12 +44,50 @@ jobs:
           key: ${{ secrets.VPS_PRIVATE_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
-            cd ~/meu-app
-            git clone https://github.com/leonrc99/rm-api-test.git app
+            mkdir -p ~/meu-app/app
+            chmod -R 755 ~/meu-app/app
+            ls -al ~/meu-app/app
 
+      - name: Criar arquivo .env temporário
+        run: |
+          echo "DB_URL=${{ secrets.DB_URL }}" > .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "MERCADO_PAGO_ACCESS_TOKEN=${{ secrets.MERCADO_PAGO_ACCESS_TOKEN }}" >> .env
+
+      - name: Enviar arquivos para a VPS
+        uses: appleboy/scp-action@master
+        with:
+          source: "."  
+          target: "~/meu-app/app"  
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          port: 22
+          timeout: 30s
+          command_timeout: 10m
+          use_insecure_cipher: false
+          debug: true
+          rm: false
+
+      - name: Enviar arquivo .env para a VPS
+        uses: appleboy/scp-action@master
+        with:
+          source: ".env"
+          target: "~/meu-app/app/.env"
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          port: 22
+          timeout: 30s
+          command_timeout: 10m
+          use_insecure_cipher: false
+          debug: true
 
       - name: Rodar Docker Compose na VPS
-        uses: appleboy/ssh-action@v0.1.5
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
