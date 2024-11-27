@@ -13,6 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/category")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*")
 public class CategoryController {
 
     private final CategoryService categoryService;
