@@ -47,32 +47,14 @@ jobs:
           script: |
             mkdir -p ~/meu-app/app
             
-      - name: Verificar permissões no diretório de destino
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          script: |
-              ls -ld ~/meu-app/app
-              chmod -R 755 ~/meu-app/app
-
-      - name: Verificar espaço em disco
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          script: |
-            df -h
-
+      - name: Listar arquivos no repositório
+        run: ls -al
+        
       - name: Enviar todos os arquivos para a VPS
-        uses: appleboy/scp-action@v0.1.5
+        uses: appleboy/scp-action@master
         with:
-          source: "pom.xml"  # Envia todos os arquivos do repositório
-          target: "~/meu-app/pom.xml"  # Caminho de destino na VPS
+          source: "."  
+          target: "~/meu-app/app"  
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_PRIVATE_KEY }}
@@ -81,10 +63,8 @@ jobs:
           timeout: 30s
           command_timeout: 10m
           use_insecure_cipher: false
-          debug: false
+          debug: true
           rm: false
-
-            
 
       - name: Rodar Docker Compose na VPS
         uses: appleboy/ssh-action@v0.1.5
