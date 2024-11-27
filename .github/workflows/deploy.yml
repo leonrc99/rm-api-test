@@ -36,50 +36,41 @@ jobs:
     needs: build
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup SSH
+      - name: Acessar VPS via SSH para configurar diretórios
         uses: appleboy/ssh-action@v0.1.4
         with:
           host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USERNAME }}
+          username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_PRIVATE_KEY }}
-          passphrase: ${{ secrets.VPS_PASSPHRASE }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
-            # Criar diretório para a aplicação, se não existir
+            # Criar o diretório para a aplicação, caso não exista
             mkdir -p ~/meu-app
-
             # Remover arquivos antigos
             rm -rf ~/meu-app/*
 
-            # Sair do diretório temporário do GitHub Actions e enviar os arquivos do repositório
-            exit
-      - name: Upload files to VPS
+      - name: Upload dos arquivos para a VPS
         uses: appleboy/scp-action@v0.1.5
         with:
-          source: ./*  # Envia todos os arquivos do repositório
+          source: ./*  # Envia todos os arquivos do repositório para a VPS
           target: ~/meu-app/
           host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USERNAME }}
+          username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_PRIVATE_KEY }}
-          passphrase: ${{ secrets.VPS_PASSPHRASE }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
 
-      - name: Run Docker commands on VPS
+      - name: Executar comandos Docker na VPS
         uses: appleboy/ssh-action@v0.1.4
         with:
           host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USERNAME }}
+          username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_PRIVATE_KEY }}
-          passphrase: ${{ secrets.VPS_PASSPHRASE }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
             cd ~/meu-app
-
-            # Puxar a nova imagem do Docker Hub
+            # Puxar a imagem mais recente
             docker pull leorcard/rm-api:latest
-
-            # Parar containers antigos
+            # Parar containers existentes
             docker-compose down
-
-            # Subir containers com os novos arquivos
+            # Subir novos containers com a imagem mais recente
             docker-compose up -d
