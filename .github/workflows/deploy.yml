@@ -46,21 +46,15 @@ jobs:
           script: |
             ls -al ./
 
-      - name: Enviar arquivos para a VPS
-        uses: appleboy/scp-action@master
+      - name: Sincronizar arquivos com a VPS usando rsync
+        uses: wei/rsh@master
         with:
-          source: "."  
-          target: "~/meu-app/app"  
           host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
+          user: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          port: 22
-          timeout: 30s
-          command_timeout: 10m
-          use_insecure_cipher: false
-          debug: true
-          rm: false
+          command: |
+            rsync -avz --delete ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/home/${{ secrets.VPS_USER }}/meu-app/app/
+    
 
       - name: Rodar Docker Compose na VPS
         uses: appleboy/ssh-action@master
