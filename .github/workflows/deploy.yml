@@ -44,6 +44,6 @@ jobs:
           key: ${{ secrets.VPS_PRIVATE_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
-            cd ~/meu-app
+            cd ~/meu-app/rm-api-test-main
             docker-compose down
             docker-compose up -d
