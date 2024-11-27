@@ -36,11 +36,43 @@ jobs:
     needs: build    
 
     steps:
+
+      - name: Criar diretório se não existir
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          script: |
+            mkdir -p ~/meu-app/app
+            
+      - name: Verificar permissões no diretório de destino
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          script: |
+              ls -ld ~/meu-app/app
+              chmod -R 755 ~/meu-app/app
+
+      - name: Verificar espaço em disco
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          script: |
+            df -h
+
       - name: Enviar todos os arquivos para a VPS
         uses: appleboy/scp-action@v0.1.5
         with:
-          source: "."  # Envia todos os arquivos do repositório
-          target: "~/meu-app/app"  # Caminho de destino na VPS
+          source: "pom.xml"  # Envia todos os arquivos do repositório
+          target: "~/meu-app/pom.xml"  # Caminho de destino na VPS
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_PRIVATE_KEY }}
@@ -51,6 +83,8 @@ jobs:
           use_insecure_cipher: false
           debug: false
           rm: false
+
+            
 
       - name: Rodar Docker Compose na VPS
         uses: appleboy/ssh-action@v0.1.5
