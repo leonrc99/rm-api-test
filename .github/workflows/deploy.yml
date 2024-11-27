@@ -33,17 +33,52 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs: build
 
     steps:
-      - name: Acessar VPS via SSH
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup SSH
         uses: appleboy/ssh-action@v0.1.4
         with:
           host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
+          username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          passphrase: ${{ secrets.VPS_PASSPHRASE }}
           script: |
+            # Criar diretório para a aplicação, se não existir
+            mkdir -p ~/meu-app
+
+            # Remover arquivos antigos
+            rm -rf ~/meu-app/*
+
+            # Sair do diretório temporário do GitHub Actions e enviar os arquivos do repositório
+            exit
+      - name: Upload files to VPS
+        uses: appleboy/scp-action@v0.1.5
+        with:
+          source: ./*  # Envia todos os arquivos do repositório
+          target: ~/meu-app/
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_PRIVATE_KEY }}
+          passphrase: ${{ secrets.VPS_PASSPHRASE }}
+
+      - name: Run Docker commands on VPS
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_PRIVATE_KEY }}
+          passphrase: ${{ secrets.VPS_PASSPHRASE }}
+          script: |
+            cd ~/meu-app
+
+            # Puxar a nova imagem do Docker Hub
             docker pull leorcard/rm-api:latest
+
+            # Parar containers antigos
             docker-compose down
+
+            # Subir containers com os novos arquivos
             docker-compose up -d
