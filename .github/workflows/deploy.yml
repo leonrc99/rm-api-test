@@ -36,7 +36,7 @@ jobs:
     needs: build
 
     steps:
-      - name: Acessar VPS via SSH para configurar diretórios
+      - name: Acessar VPS via SSH e criar diretório
         uses: appleboy/ssh-action@v0.1.4
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -44,35 +44,26 @@ jobs:
           key: ${{ secrets.VPS_PRIVATE_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
-            # Criar o diretório para a aplicação, caso não exista
+            # Criar o diretório principal para o app, se não existir
             mkdir -p ~/meu-app
-            # Remover arquivos antigos
-            rm -rf ~/meu-app/*
-      - name: Criar arquivo tar para o deploy
-        run: |
-          tar --exclude='./target' \
-              --exclude='./.mvn' \
-              --exclude='./.idea' \
-              --exclude='./.github' \
-              --exclude='./pom.xml' \
-              --exclude='./Dockerfile' \
-              --exclude='./docker-compose.yml' \
-              --exclude='./HELP.md' \
-              --exclude='./mvnw' \
-              --exclude='./mvnw.cmd' \
-              -czf deploy_files.tar.gz .
 
-      - name: Upload dos arquivos para a VPS
+      - name: Enviar todos os arquivos para a VPS
         uses: appleboy/scp-action@v0.1.5
         with:
-          source: ../../*  # Envia todos os arquivos do repositório para a VPS
-          target: ~/meu-app/
+          source: "./"  # Envia todos os arquivos do repositório
+          target: "~/meu-app/"  # Caminho de destino na VPS
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_PRIVATE_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          port: 22
+          timeout: 30s
+          command_timeout: 10m
+          use_insecure_cipher: false
+          debug: false
+          rm: false  # Não remove arquivos do destino antes de copiar
 
-      - name: Executar comandos Docker na VPS
+      - name: Rodar Docker Compose na VPS
         uses: appleboy/ssh-action@v0.1.4
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -81,9 +72,5 @@ jobs:
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
             cd ~/meu-app
-            # Puxar a imagem mais recente
-            docker pull leorcard/rm-api:latest
-            # Parar containers existentes
             docker-compose down
-            # Subir novos containers com a imagem mais recente
             docker-compose up -d
