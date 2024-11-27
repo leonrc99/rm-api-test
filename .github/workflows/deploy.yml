@@ -40,7 +40,7 @@ jobs:
       - name: Enviar todos os arquivos para a VPS
         uses: appleboy/scp-action@v0.1.5
         with:
-          source: "../*"  # Envia todos os arquivos do repositório
+          source: "../../*"  # Envia todos os arquivos do repositório
           target: "~/meu-app/app"  # Caminho de destino na VPS
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
