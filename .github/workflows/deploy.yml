@@ -31,19 +31,17 @@ jobs:
                        -t leorcard/rm-api:latest .
           docker push leorcard/rm-api:latest
 
-  scp-files-job:
-    runs-on: ubuntu-latest
-    needs: build   
-    
-    steps:
-      - uses: actions/checkout@v2
-      - uses: a-was/scp-action@v1
+      - name: copy file via ssh password
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
-          user: ${{ secrets.VPS_USER }}
+          username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_PRIVATE_KEY }}
-          destination: '~/meu-app/app/'
-
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          port: 22
+          source: ./*
+          target: ~/meu-app/app
+          
   deploy:
     runs-on: ubuntu-latest
     needs: build    
