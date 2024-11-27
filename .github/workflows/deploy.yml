@@ -44,9 +44,7 @@ jobs:
           key: ${{ secrets.VPS_PRIVATE_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
-            mkdir -p ~/meu-app/app
-            chmod -R 755 ~/meu-app/app
-            ls -al ~/meu-app/app
+            ls -al ./
 
       - name: Enviar arquivos para a VPS
         uses: appleboy/scp-action@master
@@ -63,20 +61,6 @@ jobs:
           use_insecure_cipher: false
           debug: true
           rm: false
-
-      - name: Criar arquivo .env na VPS
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          script: |
-            echo "DB_URL=${{ secrets.DB_URL }}" > ~/meu-app/app/.env
-            echo "DB_USER=${{ secrets.DB_USER }}" >> ~/meu-app/app/.env
-            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ~/meu-app/app/.env
-            echo "MERCADO_PAGO_ACCESS_TOKEN=${{ secrets.MERCADO_PAGO_ACCESS_TOKEN }}" >> ~/meu-app/app/.env
-            cat ~/meu-app/app/.env  # Verifique se o arquivo foi criado corretamente
 
       - name: Rodar Docker Compose na VPS
         uses: appleboy/ssh-action@master
