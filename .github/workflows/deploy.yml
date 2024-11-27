@@ -28,21 +28,34 @@ jobs:
                        --build-arg DB_USER=${{ secrets.DB_USER }} \
                        --build-arg DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
                        --build-arg MERCADO_PAGO_ACCESS_TOKEN=${{ secrets.MERCADO_PAGO_ACCESS_TOKEN }} \
-                       -t meuusuario/minha-aplicacao:latest .
-          docker push meuusuario/minha-aplicacao:latest
+                       -t leorcard/rm-api:latest .
+          docker push leorcard/rm-api:latest
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
 
     steps:
-      - name: Acessar VPS via SSH
-        uses: appleboy/ssh-action@v0.1.4
+      - name: Clonar repositório na VPS
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
-            docker pull meuusuario/minha-aplicacao:latest
+            cd ~/meu-app
+            git clone https://github.com/leonrc99/rm-api-test.git app
+
+
+      - name: Rodar Docker Compose na VPS
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          script: |
+            cd ~/meu-app/app
             docker-compose down
             docker-compose up -d

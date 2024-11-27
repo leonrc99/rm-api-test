@@ -13,7 +13,7 @@ ENV DB_PASSWORD=$DB_PASSWORD
 ENV MERCADO_PAGO_ACCESS_TOKEN=$MERCADO_PAGO_ACCESS_TOKEN
 
 # Adicionar o JAR da aplicação
-ARG JAR_FILE=target/minha-aplicacao.jar
+ARG JAR_FILE=target/api-rm.jar
 COPY ${JAR_FILE} app.jar
 
 # Expor a porta
