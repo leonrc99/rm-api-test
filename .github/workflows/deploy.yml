@@ -45,7 +45,7 @@ jobs:
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
             cd ~/meu-app
-            git clone https://github.com/seu-usuario/seu-repositorio.git app
+            git clone https://github.com/leonrc99/rm-api-test.git app
 
 
       - name: Rodar Docker Compose na VPS
