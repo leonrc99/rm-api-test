@@ -41,6 +41,14 @@ jobs:
           port: 22
           source: ./*
           target: ~/meu-app/app
+
+      - name: Criar arquivo .env temporário
+        run: |
+          cd ./meu-app/app
+          echo "DB_URL=${{ secrets.DB_URL }}" > .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "MERCADO_PAGO_ACCESS_TOKEN=${{ secrets.MERCADO_PAGO_ACCESS_TOKEN }}" >> .env
           
   deploy:
     runs-on: ubuntu-latest
