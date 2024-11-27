@@ -48,10 +48,19 @@ jobs:
             mkdir -p ~/meu-app
             # Remover arquivos antigos
             rm -rf ~/meu-app/*
-
-      - name: Verificar Arquivos
+      - name: Criar arquivo tar para o deploy
         run: |
-          ls -la
+          tar --exclude='./target' \
+              --exclude='./.mvn' \
+              --exclude='./.idea' \
+              --exclude='./.github' \
+              --exclude='./pom.xml' \
+              --exclude='./Dockerfile' \
+              --exclude='./docker-compose.yml' \
+              --exclude='./HELP.md' \
+              --exclude='./mvnw' \
+              --exclude='./mvnw.cmd' \
+              -czf deploy_files.tar.gz .
 
       - name: Upload dos arquivos para a VPS
         uses: appleboy/scp-action@v0.1.5
