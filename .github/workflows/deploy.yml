@@ -49,10 +49,14 @@ jobs:
             # Remover arquivos antigos
             rm -rf ~/meu-app/*
 
+      - name: Verificar Arquivos
+        run: |
+          ls -la
+
       - name: Upload dos arquivos para a VPS
         uses: appleboy/scp-action@v0.1.5
         with:
-          source: ./*  # Envia todos os arquivos do repositório para a VPS
+          source: ./  # Envia todos os arquivos do repositório para a VPS
           target: ~/meu-app/
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
