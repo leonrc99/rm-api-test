@@ -43,6 +43,7 @@ C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\jav
 C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\repository\ProductRepository.java
 C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\repository\ShoppingCartRepository.java
 C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\repository\UserRepository.java
+C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\security\GlobalExceptionHandler.java
 C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\security\JwtAuthenticationFilter.java
 C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\security\JwtUtil.java
 C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\security\MercadoPagoInitializer.java

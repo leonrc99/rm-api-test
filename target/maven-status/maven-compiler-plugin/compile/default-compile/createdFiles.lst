@@ -56,6 +56,7 @@ com\reliquiasdamagia\api_rm\security\JwtAuthenticationFilter.class
 com\reliquiasdamagia\api_rm\entity\Product.class
 com\reliquiasdamagia\api_rm\entity\Availability.class
 com\reliquiasdamagia\api_rm\security\SecurityConfig.class
+com\reliquiasdamagia\api_rm\security\GlobalExceptionHandler.class
 com\reliquiasdamagia\api_rm\repository\ShoppingCartRepository.class
 com\reliquiasdamagia\api_rm\entity\Appointment.class
 com\reliquiasdamagia\api_rm\entity\OrderItem.class
