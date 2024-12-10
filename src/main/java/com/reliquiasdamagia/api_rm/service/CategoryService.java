@@ -23,6 +23,11 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
 
+    public Category getCategoryById(Long id) {
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
+    }
+
     public Category updateCategory(Long id, Category updatedCategory) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));

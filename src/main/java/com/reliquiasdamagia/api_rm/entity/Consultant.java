@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -23,7 +24,7 @@ public class Consultant {
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonBackReference
+    @JsonManagedReference
     private User user;
 
     @Column(nullable = false)
@@ -31,6 +32,12 @@ public class Consultant {
 
     @Column(nullable = false)
     private String specialties;
+
+    @Column(nullable = false)
+    private String imageUrl;
+
+    @Column(nullable = false)
+    private BigDecimal price;
 
     @OneToMany(mappedBy = "consultant", cascade = CascadeType.ALL)
     @JsonManagedReference

@@ -30,7 +30,6 @@ public class PaymentService {
     private final ShoppingCartService shoppingCartService;
     private final OrderRepository orderRepository;
     private final AppointmentRepository appointmentRepository;
-    private final AppointmentService appointmentService;
 
     public String createPaymentFromOrder(Order order, String payerEmail) throws MPException, MPApiException {
         // Configuração do cliente de preferência
@@ -39,7 +38,8 @@ public class PaymentService {
         // Criar itens da preferência com base nos itens da ordem
         List<PreferenceItemRequest> items = order.getItems().stream()
                 .map(orderItem -> PreferenceItemRequest.builder()
-                        .title(orderItem.getProduct().getName())
+                        .title("Produto: " + orderItem.getProduct().getName())
+                        .description("Detalhes do produto: " + orderItem.getProduct().getDescription()) // Adicione a descrição
                         .quantity(orderItem.getQuantity())
                         .unitPrice(orderItem.getPrice())
                         .build())
@@ -113,12 +113,16 @@ public class PaymentService {
             throw new RuntimeException("Apenas consultas com status PENDING podem ser pagas.");
         }
 
-        // Configurar itens para o pagamento
-        PreferenceClient preferenceClient = new PreferenceClient();
+        // Calcular preço total
+        BigDecimal pricePerMinute = appointment.getConsultant().getPrice();
+        Integer duration = appointment.getDurationInMinutes();
+        BigDecimal totalPrice = pricePerMinute.multiply(new BigDecimal(duration));
+
+        // Criar item e preferência
         PreferenceItemRequest item = PreferenceItemRequest.builder()
-                .title("Consulta Tarot")
+                .title("Consulta Tarot com " + appointment.getConsultant().getUser().getName())
                 .quantity(1)
-                .unitPrice(new BigDecimal(100)) // Exemplo de preço fixo, ajuste conforme necessário
+                .unitPrice(totalPrice)
                 .build();
 
         PreferenceRequest preferenceRequest = PreferenceRequest.builder()
@@ -127,9 +131,10 @@ public class PaymentService {
                 .externalReference(String.valueOf(appointmentId))
                 .build();
 
+        PreferenceClient preferenceClient = new PreferenceClient();
         Preference preference = preferenceClient.create(preferenceRequest);
 
-        // Atualizar a consulta com informações de pagamento
+        // Atualizar compromisso com ID do pagamento
         appointment.setPaymentId(preference.getId());
         appointment.setStatus(AppointmentStatus.PAYMENT_INITIATED);
         appointmentRepository.save(appointment);

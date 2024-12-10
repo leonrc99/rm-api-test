@@ -120,4 +120,16 @@ public class UserController {
             return ResponseEntity.internalServerError().body("Erro ao buscar histórico de pedidos: " + ex.getMessage());
         }
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteById(@PathVariable Long id) {
+        try {
+            userService.deleteUserById(id);
+            return ResponseEntity.ok("Usuário excluido com sucesso");
+        } catch (EntityNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário ou produto não encontrado.");
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body("Erro ao remover favorito: " + ex.getMessage());
+        }
+    }
 }

@@ -13,7 +13,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/category")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*")
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -35,6 +34,18 @@ public class CategoryController {
             return ResponseEntity.ok(categories);
         } catch (Exception ex) {
             return ResponseEntity.internalServerError().body("Erro ao buscar categorias: " + ex.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getCategoryById(@PathVariable Long id) {
+        try {
+            Category category = categoryService.getCategoryById(id);
+            return ResponseEntity.ok(category);
+        } catch (EntityNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Produto não encontrado.");
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body("Erro ao buscar produto: " + ex.getMessage());
         }
     }
 

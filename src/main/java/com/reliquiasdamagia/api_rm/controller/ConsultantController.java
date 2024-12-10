@@ -1,5 +1,6 @@
 package com.reliquiasdamagia.api_rm.controller;
 
+import com.reliquiasdamagia.api_rm.dto.ConsultantRequest;
 import com.reliquiasdamagia.api_rm.entity.Appointment;
 import com.reliquiasdamagia.api_rm.entity.Consultant;
 import com.reliquiasdamagia.api_rm.service.AppointmentService;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -22,10 +24,21 @@ public class ConsultantController {
     @PostMapping("/{userId}")
     public ResponseEntity<?> registerConsultant(
             @PathVariable Long userId,
-            @RequestParam String bio,
-            @RequestParam String specialties) {
+            @RequestBody ConsultantRequest request
+            ) {
         try {
-            Consultant consultant = consultantService.registerConsultant(userId, bio, specialties);
+            Consultant consultant = consultantService.registerConsultant(
+                    userId,
+                    request.getBio(),
+                    request.getSpecialties(),
+                    request.getImageUrl(),
+                    request.getPrice()
+            );
+
+            if (consultant.getPrice() == null || consultant.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
+                return ResponseEntity.badRequest().body("O preço da consulta deve ser maior que zero.");
+            }
+
             return ResponseEntity.status(HttpStatus.CREATED).body(consultant);
         } catch (EntityNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado.");
@@ -53,6 +66,18 @@ public class ConsultantController {
             return ResponseEntity.ok(consultants);
         } catch (Exception ex) {
             return ResponseEntity.internalServerError().body("Erro ao buscar consultores: " + ex.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getConsultantById(@PathVariable Long id) {
+        try {
+            Consultant consultant = consultantService.getConsultantById(id);
+            return ResponseEntity.ok(consultant);
+        } catch (EntityNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Consultor não encontrado.");
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body("Erro ao buscar consultor: " + ex.getMessage());
         }
     }
 }

@@ -9,5 +9,5 @@ public class AvailabilityRequest {
     private Long consultantId;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private Integer intervalMinutes;
+    private Integer intervalMinutes = 1;
 }

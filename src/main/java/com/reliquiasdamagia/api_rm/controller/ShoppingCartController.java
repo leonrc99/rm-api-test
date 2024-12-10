@@ -15,8 +15,8 @@ public class ShoppingCartController {
 
     private final ShoppingCartService cartService;
 
-    @GetMapping
-    public ResponseEntity<?> getCart(@RequestParam Long userId) {
+    @GetMapping("{userId}")
+    public ResponseEntity<?> getCart(@PathVariable Long userId) {
         try {
             ShoppingCart cart = cartService.getCart(userId);
             return ResponseEntity.ok(cart);

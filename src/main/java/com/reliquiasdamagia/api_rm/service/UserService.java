@@ -29,9 +29,8 @@ public class UserService {
                 .getEmail();
     }
 
-    public User getUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+    public void deleteUserById(Long id) {
+        userRepository.deleteById(id);
     }
 
     // Buscar o usuário autenticado
@@ -97,5 +96,17 @@ public class UserService {
 
         // Supondo que você tenha um relacionamento entre User e Order
         return user.getOrders();  // Retorna os pedidos do usuário
+    }
+
+    public String getUserEmail(Long userId) {
+        return userRepository.findById(userId)
+                .map(User::getEmail)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado com ID: " + userId));
+    }
+
+    public Long getUserIdByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .map(User::getId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
     }
 }

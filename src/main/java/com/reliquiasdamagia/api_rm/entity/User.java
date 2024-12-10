@@ -1,6 +1,7 @@
 package com.reliquiasdamagia.api_rm.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -50,7 +51,7 @@ public class User {
     private String country;
 
     @Column(nullable = false)
-    private String role;
+    private String role = "USER";
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -70,7 +71,7 @@ public class User {
 
     // Relacionamento com a entidade Consultant, caso o usuário seja um consultor
     @OneToOne(mappedBy = "user")
-    @JsonManagedReference
+    @JsonIgnore
     private Consultant consultant;
 
     // Verifica se o usuário tem o papel de consultor
@@ -87,6 +88,6 @@ public class User {
     private List<Product> favorites;
 
     @OneToMany(mappedBy = "user")
-    @JsonBackReference
+    @JsonIgnore
     private List<Order> orders;
 }

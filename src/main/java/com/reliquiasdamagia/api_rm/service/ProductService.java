@@ -58,6 +58,14 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    public List<ProductDTO> getProductsByCategoryName(String categoryName) {
+        List<Product> products = productRepository.findByCategoryName(categoryName);
+
+        return products.stream()
+                .map(this::toProductDTO)
+                .collect(Collectors.toList());
+    }
+
     public ProductDTO updateProduct(Long id, ProductRequest request) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado"));

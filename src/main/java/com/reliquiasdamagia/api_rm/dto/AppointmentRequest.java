@@ -9,4 +9,5 @@ public class AppointmentRequest {
     private Long consultantId;
     private Long userId;
     private LocalDateTime dateTime;
+    private Integer durationInMinutes;
 }

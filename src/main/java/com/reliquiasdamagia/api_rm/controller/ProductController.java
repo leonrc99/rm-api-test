@@ -50,6 +50,26 @@ public class ProductController {
         }
     }
 
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<?> getProductsByCategoryId(@PathVariable Long categoryId) {
+        try {
+            List<ProductDTO> products = productService.getProductsByCategoryId(categoryId);
+            return ResponseEntity.ok(products);
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body("Erro ao buscar produtos: " + ex.getMessage());
+        }
+    }
+
+    @GetMapping("/category-name/{categoryName}")
+    public ResponseEntity<?> getProductsByCategoryName(@PathVariable String categoryName) {
+        try {
+            List<ProductDTO> products = productService.getProductsByCategoryName(categoryName);
+            return ResponseEntity.ok(products);
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body("Erro ao buscar produtos: " + ex.getMessage());
+        }
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateProduct(@PathVariable Long id, @RequestBody ProductRequest request) {
         try {

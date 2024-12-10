@@ -37,4 +37,7 @@ public class Appointment {
     private AppointmentStatus status; // PENDING, CONFIRMED, COMPLETED, CANCELED
 
     private String paymentId;
+
+    @Column(nullable = false)
+    private Integer durationInMinutes;
 }
