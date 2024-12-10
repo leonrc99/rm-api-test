@@ -6,6 +6,7 @@ com\reliquiasdamagia\api_rm\service\AvailabilityService.class
 com\reliquiasdamagia\api_rm\controller\ConsultantController.class
 com\reliquiasdamagia\api_rm\ApiRmApplication.class
 com\reliquiasdamagia\api_rm\service\ConsultantService.class
+com\reliquiasdamagia\api_rm\service\PaymentProcessor.class
 com\reliquiasdamagia\api_rm\dto\UserDTO.class
 com\reliquiasdamagia\api_rm\entity\Category.class
 com\reliquiasdamagia\api_rm\repository\ProductRepository.class
@@ -38,7 +39,6 @@ com\reliquiasdamagia\api_rm\dto\AuthRequest.class
 com\reliquiasdamagia\api_rm\controller\UserController.class
 com\reliquiasdamagia\api_rm\security\MercadoPagoInitializer.class
 com\reliquiasdamagia\api_rm\entity\User.class
-com\reliquiasdamagia\api_rm\security\WebConfig.class
 com\reliquiasdamagia\api_rm\repository\CategoryRepository.class
 com\reliquiasdamagia\api_rm\service\AppointmentService.class
 com\reliquiasdamagia\api_rm\entity\ShoppingCart.class
@@ -50,6 +50,7 @@ com\reliquiasdamagia\api_rm\service\ShoppingCartService.class
 com\reliquiasdamagia\api_rm\dto\AppointmentRequest.class
 com\reliquiasdamagia\api_rm\repository\OrderItemRepository.class
 com\reliquiasdamagia\api_rm\controller\PaymentController.class
+com\reliquiasdamagia\api_rm\dto\ConsultantRequest.class
 com\reliquiasdamagia\api_rm\dto\ProductDTO.class
 com\reliquiasdamagia\api_rm\security\JwtAuthenticationFilter.class
 com\reliquiasdamagia\api_rm\entity\Product.class

@@ -13,6 +13,7 @@ C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\jav
 C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\dto\AuthRequest.java
 C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\dto\AuthResponse.java
 C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\dto\AvailabilityRequest.java
+C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\dto\ConsultantRequest.java
 C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\dto\FavoriteRequest.java
 C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\dto\ProductDTO.java
 C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\dto\ProductRequest.java
@@ -46,7 +47,6 @@ C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\jav
 C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\security\JwtUtil.java
 C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\security\MercadoPagoInitializer.java
 C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\security\SecurityConfig.java
-C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\security\WebConfig.java
 C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\service\AppointmentService.java
 C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\service\AuthService.java
 C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\service\AvailabilityService.java
@@ -54,6 +54,7 @@ C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\jav
 C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\service\ConsultantService.java
 C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\service\CustomUserDetailsService.java
 C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\service\OrderService.java
+C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\service\PaymentProcessor.java
 C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\service\PaymentService.java
 C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\service\ProductService.java
 C:\Users\leona\OneDrive\Área de Trabalho\reliquias-da-magia\api-rm\src\main\java\com\reliquiasdamagia\api_rm\service\ShoppingCartService.java
