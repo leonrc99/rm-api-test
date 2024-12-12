@@ -12,7 +12,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleException(Exception ex) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Access-Control-Allow-Origin", "http://front-rm.s3-website-us-east-1.amazonaws.com");
+        headers.add("Access-Control-Allow-Origin", "http://localhost:4200");
         headers.add("Access-Control-Allow-Credentials", "true");
 
         return new ResponseEntity<>(ex.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);

@@ -55,6 +55,7 @@ public class SecurityConfig {
 
                         // Order
                         .requestMatchers(HttpMethod.POST, "/api/orders").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/orders").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/orders").authenticated()
 
                         // Payments
@@ -98,7 +99,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("http://front-rm.s3-website-us-east-1.amazonaws.com"); // Origem exata do frontend
+        config.addAllowedOrigin("http://localhost:4200"); // Origem exata do frontend
         config.addAllowedMethod("*"); // Todos os métodos HTTP (GET, POST, etc.)
         config.addAllowedHeader("*"); // Todos os cabeçalhos
         config.setAllowCredentials(true); // Permite cookies/autenticação
