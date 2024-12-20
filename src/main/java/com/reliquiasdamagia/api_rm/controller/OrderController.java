@@ -39,4 +39,10 @@ public class OrderController {
             return ResponseEntity.internalServerError().body("Erro ao buscar pedidos: " + ex.getMessage());
         }
     }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<?> deleteOrder(@PathVariable Long id) {
+        orderService.deleteOrder(id);
+        return ResponseEntity.ok("Pedido excluído");
+    }
 }

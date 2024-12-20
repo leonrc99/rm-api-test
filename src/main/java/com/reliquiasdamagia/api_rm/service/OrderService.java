@@ -119,4 +119,8 @@ public class OrderService {
             productRepository.save(product);
         });
     }
+
+    public void deleteOrder(Long id) {
+        orderRepository.deleteById(id);
+    }
 }
