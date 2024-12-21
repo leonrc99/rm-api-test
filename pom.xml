@@ -126,6 +126,11 @@
 			<artifactId>mockito-core</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.reliquiasdamagia</groupId>
+			<artifactId>api-rm</artifactId>
+			<version>1</version>
+		</dependency>
 	</dependencies>
 
 	<build>

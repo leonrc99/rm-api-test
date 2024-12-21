@@ -1,5 +1,6 @@
 package com.reliquiasdamagia.api_rm.security;
 
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,6 +18,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+
+import java.util.List;
 
 @Configuration
 public class SecurityConfig {
@@ -64,7 +67,6 @@ public class SecurityConfig {
 
                         // Products
                         .requestMatchers(HttpMethod.GET, "/api/product/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/product/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/product/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/product/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/product/**").hasAuthority("ADMIN")
@@ -79,6 +81,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/users/me/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/users/me/**").authenticated()
+
+                        //files
+                        .requestMatchers(HttpMethod.GET, "/api/files/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -99,10 +104,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("http://localhost:4200"); // Origem exata do frontend
-        config.addAllowedMethod("*"); // Todos os métodos HTTP (GET, POST, etc.)
+        config.addAllowedOriginPattern("*"); // Permitir apenas a origem do frontend
+        config.addAllowedMethod("*"); // Todos os métodos (GET, POST, etc.)
         config.addAllowedHeader("*"); // Todos os cabeçalhos
-        config.setAllowCredentials(true); // Permite cookies/autenticação
+        config.setAllowCredentials(true); // Permitir credenciais
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

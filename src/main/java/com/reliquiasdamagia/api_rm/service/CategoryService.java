@@ -39,4 +39,12 @@ public class CategoryService {
     public void deleteCategory(Long id) {
         categoryRepository.deleteById(id);
     }
+
+    public void saveCategories(List<Category> categories) {
+        categories.forEach(category -> {
+            if (!categoryRepository.existsByName(category.getName())) {
+                categoryRepository.save(category);
+            }
+        });
+    }
 }
